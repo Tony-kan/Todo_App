@@ -13,6 +13,14 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final todoList = TodoModel.todoList();
   final _todoController = TextEditingController();
+  List<TodoModel> _foundTodo = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _foundTodo = todoList;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +50,7 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
-                      for (TodoModel todo in todoList)
+                      for (TodoModel todo in _foundTodo.reversed)
                         Todoitem(
                           todo: todo,
                           onTodoCHanged: _handleTodoChange,
@@ -115,6 +123,30 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget searchBox() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: TextField(
+        onChanged: (value) => _runFilter(value),
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(0),
+            prefixIcon: Icon(
+              Icons.search,
+              color: tdBlack,
+              size: 20,
+            ),
+            prefixIconConstraints: BoxConstraints(maxHeight: 20, maxWidth: 25),
+            border: InputBorder.none,
+            hintText: 'search',
+            hintStyle: TextStyle(color: tdGrey)),
+      ),
+    );
+  }
+
   void _handleTodoChange(TodoModel todo) {
     setState(() {
       todo.isDone = !todo.isDone;
@@ -134,6 +166,23 @@ class _HomeState extends State<Home> {
         todoText: todo,
       ));
       _todoController.clear();
+    });
+  }
+
+  void _runFilter(String enteredKeyword) {
+    List<TodoModel> results = [];
+    if (enteredKeyword.isEmpty) {
+      results = todoList;
+    } else {
+      results = todoList
+          .where((item) => item.todoText!
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
+          .toList();
+    }
+
+    setState(() {
+      _foundTodo = results;
     });
   }
 
@@ -161,27 +210,4 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-}
-
-Widget searchBox() {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 20),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: TextField(
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(0),
-          prefixIcon: Icon(
-            Icons.search,
-            color: tdBlack,
-            size: 20,
-          ),
-          prefixIconConstraints: BoxConstraints(maxHeight: 20, maxWidth: 25),
-          border: InputBorder.none,
-          hintText: 'search',
-          hintStyle: TextStyle(color: tdGrey)),
-    ),
-  );
 }
