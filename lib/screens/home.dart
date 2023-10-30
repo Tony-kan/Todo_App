@@ -3,9 +3,14 @@ import '../model/todo_model.dart';
 import '../constants/colors.dart';
 import '../widgets/todo_item.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final todoList = TodoModel.todoList();
 
   @override
@@ -39,6 +44,8 @@ class Home extends StatelessWidget {
                       for (TodoModel todo in todoList)
                         Todoitem(
                           todo: todo,
+                          onTodoCHanged: _handleTodoChange,
+                          onDeleteItem: () {},
                         ),
                     ],
                   ),
@@ -103,6 +110,12 @@ class Home extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _handleTodoChange(TodoModel todo) {
+    setState(() {
+      todo.isDone = !todo.isDone;
+    });
   }
 
   AppBar _buildAppBar() {
